@@ -1,0 +1,47 @@
+# Deploy-Schutz (YG Pattern P-10, Governance 5):
+# Veroeffentlicht die Site via GitHub Actions und schliesst brain/, scripts/,
+# CLAUDE.md und .claude/ aus — das Brain geht NIE live.
+# Aktivierung: Repo-Settings -> Pages -> Source: "GitHub Actions" (Yasin-Gate).
+name: Deploy Site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build-Verzeichnis ohne Brain/Interna
+        run: |
+          mkdir _site
+          rsync -a --exclude '_site' \
+            --exclude 'brain' \
+            --exclude 'scripts' \
+            --exclude 'CLAUDE.md' \
+            --exclude '.claude' \
+            --exclude '.github' \
+            --exclude '.git' \
+            ./ _site/
+          test -f _site/CNAME
+          test ! -d _site/brain
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

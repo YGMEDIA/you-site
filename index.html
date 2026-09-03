@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YOU | Die App für Körper und Geist mit KI-Onboarding</title>
+<meta name="description" content="YOU misst Körper und Geist: KI-Onboarding mit psychologischem Profil, vier Ringe, Habits, Journal, Training, Foto-Scan für Mahlzeiten, Schlaf und Recovery mit dem YOU Band.">
+<meta name="keywords" content="YOU App, App für Körper und Geist, Life Operating System, Habit Tracker App, Journal App, Recovery App, HRV Band, Schlaf Tracker, KI Onboarding, Selbstreflexion App">
+<meta property="og:title" content="YOU | Die App für Körper und Geist">
+<meta property="og:description" content="Andere messen den Körper. YOU misst Körper und Geist. KI-Onboarding, vier Ringe, Journal, Training, Ernährung, Schlaf und Recovery mit dem YOU Band.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://you.yg-media.de/">
+<meta property="og:image" content="https://you.yg-media.de/assets/you-keyvisual.webp">
+<meta property="og:site_name" content="YOU">
+<meta property="og:locale" content="de_DE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="YOU | Die App für Körper und Geist">
+<meta name="twitter:description" content="KI-Onboarding mit psychologischem Profil, vier Ringe für den Tag, Schlaf und Recovery mit dem YOU Band.">
+<meta name="twitter:image" content="https://you.yg-media.de/assets/you-keyvisual.webp">
+<link rel="canonical" href="https://you.yg-media.de/">
+<link rel="alternate" hreflang="de" href="https://you.yg-media.de/">
+<link rel="alternate" hreflang="en" href="https://you.yg-media.de/en/">
+<link rel="alternate" hreflang="x-default" href="https://you.yg-media.de/">
+<link rel="icon" type="image/webp" href="/assets/you-icon.webp">
+<link rel="apple-touch-icon" href="/assets/you-icon.webp">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/playfair-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 300 900; font-display: swap; src: url(/assets/fonts/inter-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 500 700; font-display: swap; src: url(/assets/fonts/playfair-italic-latin.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+/* YOU Design-Tokens (Quelle: YOU-Repo YOU/Core/Design/DesignTokens.swift). Akzent-Tief #11678C fuer Flaechen und Raender,
+   Akzent-Hell #38BDF8 (Geist-Ring) fuer Text-Hervorhebungen, weil #11678C auf Schwarz keinen Lesekontrast hat. */
+:root {
+  --accent: #11678C;
+  --bright: #38BDF8;
+  --bright-glow: rgba(56, 189, 248, 0.45);
+  --ring-body: #F43F5E;
+  --ring-mind: #38BDF8;
+  --ring-consistency: #10B981;
+  --ring-recovery: #8B5CF6;
+  --bg: #07070F;
+  --surface: #0D0D1A;
+  --card: #0A1018;
+  --card-hover: #0F1826;
+  --text: #F0F0F0;
+  --muted: #B4B4C8;
+  --faint: #8888AA;
+  --warning: #F59E0B;
+  --border: rgba(255,255,255,0.08);
+  --glass: rgba(255,255,255,0.03);
+  --glass-line: rgba(255,255,255,0.07);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; line-height: 1.65; }
+
+/* HINTERGRUND-DNA */
+#bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.orb-wrap { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(140px); }
+.orb-1 { width: 900px; height: 900px; background: radial-gradient(circle, rgba(17,103,140,0.22) 0%, transparent 70%); top: -320px; left: -220px; animation: orb1 25s ease-in-out infinite alternate; }
+.orb-2 { width: 620px; height: 620px; background: radial-gradient(circle, rgba(10,45,78,0.35) 0%, transparent 70%); bottom: 4%; right: -160px; animation: orb2 32s ease-in-out infinite alternate; }
+.orb-3 { width: 520px; height: 520px; background: radial-gradient(circle, rgba(21,33,74,0.35) 0%, transparent 70%); top: 42%; left: 44%; animation: orb3 40s ease-in-out infinite alternate; }
+.orb-4 { width: 360px; height: 360px; background: radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%); top: 18%; right: 18%; animation: orb1 18s ease-in-out infinite alternate-reverse; }
+@keyframes orb1 { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(60px,-40px) scale(1.1); } 100% { transform: translate(-30px,60px) scale(0.95); } }
+@keyframes orb2 { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(-80px,-60px) scale(1.15); } }
+@keyframes orb3 { 0% { transform: translate(0,0); } 100% { transform: translate(-60px,80px) scale(1.2); } }
+.grid-overlay { position: fixed; inset: 0; z-index: 2; pointer-events: none; background-image: linear-gradient(rgba(56,189,248,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.022) 1px, transparent 1px); background-size: 80px 80px; mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%); }
+body::after { content: ''; position: fixed; inset: 0; z-index: 3; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"); pointer-events: none; opacity: 0.4; }
+
+/* GLAS (eine Definition, saubere Kanten: 1-px-Rand, Highlight-Linie oben, gleicher Blur) */
+.glass { background: var(--glass); border: 1px solid var(--glass-line); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 20px 50px -30px rgba(0,0,0,0.7); }
+
+/* NAV */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 1.1rem 0; transition: background 0.3s, border-color 0.3s; }
+nav.scrolled { background: rgba(7,7,15,0.82); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border-bottom: 1px solid rgba(255,255,255,0.08); }
+.nav-inner { max-width: 1240px; margin: 0 auto; padding: 0 2.5rem; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: center; gap: 0.7rem; text-decoration: none; }
+.nav-logo img { height: 36px; width: 36px; border-radius: 10px; display: block; }
+.nav-logo-text { font-size: 1.05rem; font-weight: 900; color: var(--text); letter-spacing: 0.04em; }
+.nav-links { display: flex; align-items: center; gap: 2.2rem; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.nav-cta { background: var(--bright) !important; color: #061621 !important; padding: 0.55rem 1.4rem; border-radius: 99px; font-weight: 700 !important; transition: transform 0.2s, box-shadow 0.2s !important; }
+.nav-cta:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(56,189,248,0.45), 0 8px 24px rgba(56,189,248,0.2); }
+.nav-lang { border: 1px solid var(--border); border-radius: 99px; padding: 0.35rem 0.8rem; font-size: 0.75rem !important; font-weight: 700 !important; letter-spacing: 0.06em; transition: border-color 0.2s, color 0.2s; }
+.nav-lang:hover { border-color: rgba(56,189,248,0.45); color: var(--bright) !important; }
+.nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: 0; }
+.nav-burger span { display: block; width: 24px; height: 2px; background: var(--text); border-radius: 2px; }
+
+/* LAYOUT */
+.wrap { max-width: 1240px; margin: 0 auto; padding: 0 2.5rem; position: relative; z-index: 10; }
+section { padding: 7rem 0; position: relative; z-index: 10; }
+section[id] { scroll-margin-top: 70px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--bright); font-weight: 700; margin-bottom: 1.2rem; text-shadow: 0 0 14px rgba(56,189,248,0.35); }
+.sec-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 2.5rem; margin-bottom: 3.5rem; }
+.sec-title { font-size: clamp(2.1rem, 3.8vw, 3.3rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.08; }
+.sec-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; color: var(--bright); text-shadow: 0 0 30px rgba(56,189,248,0.35); }
+.sec-sub { max-width: 440px; color: var(--muted); font-size: 0.95rem; line-height: 1.8; text-align: right; padding-bottom: 0.4rem; }
+
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2.1rem; border-radius: 99px; font-weight: 700; font-size: 0.9rem; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; font-family: 'Inter', sans-serif; letter-spacing: -0.01em; }
+.btn-primary { background: var(--bright); color: #061621; }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 28px rgba(56,189,248,0.45), 0 12px 30px rgba(56,189,248,0.2); }
+.btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); font-weight: 600; }
+.btn-ghost:hover { border-color: rgba(56,189,248,0.45); background: rgba(56,189,248,0.06); }
+
+/* HERO */
+.hero { min-height: 100vh; display: flex; align-items: center; padding: 130px 0 70px; }
+.hero-inner { display: grid; grid-template-columns: 1fr 400px; gap: 4.5rem; align-items: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bright); font-weight: 700; border: 1px solid rgba(56,189,248,0.3); padding: 0.35rem 1rem 0.35rem 0.7rem; border-radius: 99px; margin-bottom: 1.8rem; background: rgba(56,189,248,0.07); width: fit-content; }
+.hero-badge-dot { width: 6px; height: 6px; background: var(--bright); border-radius: 50%; animation: pulse 2s ease infinite; box-shadow: 0 0 6px rgba(56,189,248,0.8); }
+@keyframes pulse { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:0.4; transform: scale(0.8); } }
+.hero-h1 { font-size: clamp(2.2rem, 3.8vw, 4rem); font-weight: 900; line-height: 1.06; letter-spacing: -0.035em; margin-bottom: 1.6rem; }
+.hero-h1 em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; color: var(--bright); text-shadow: 0 0 30px rgba(56,189,248,0.4), 0 0 60px rgba(56,189,248,0.15); }
+.hero-sub { font-size: 1.05rem; color: var(--muted); max-width: 560px; margin-bottom: 2.4rem; line-height: 1.8; }
+.hero-btns { display: flex; gap: 1.2rem; flex-wrap: wrap; align-items: center; }
+.hero-note { display: block; margin-top: 1.6rem; font-size: 0.8rem; color: var(--faint); }
+.hero-visual { position: relative; }
+.hero-logo { width: 100%; max-width: 400px; height: auto; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 32px; display: block; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 50px 100px -30px rgba(0,0,0,0.85), 0 0 110px -35px rgba(56,189,248,0.35); }
+.hero-glow { position: absolute; inset: -12% -18%; background: radial-gradient(circle, rgba(56,189,248,0.10) 0%, transparent 65%); pointer-events: none; z-index: -1; }
+.rings { display: flex; justify-content: center; gap: 1.6rem; margin-top: 1.8rem; }
+.ring { display: flex; flex-direction: column; align-items: center; gap: 0.55rem; font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); font-weight: 700; }
+.ring i { width: 54px; height: 54px; border-radius: 50%; display: block; background: conic-gradient(var(--c) calc(var(--p) * 1%), rgba(255,255,255,0.09) 0); -webkit-mask: radial-gradient(circle, transparent 61%, #000 62%); mask: radial-gradient(circle, transparent 61%, #000 62%); }
+
+/* VERTRAUENSLEISTE */
+.trust { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 2.2rem 0; }
+.trust-inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1.5rem 2rem; }
+.trust-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+.trust-check { color: var(--bright); font-weight: 900; }
+
+/* ABLAUF */
+.flow-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+.flow-card { border-radius: 20px; padding: 2rem 1.8rem; transition: border-color 0.3s, transform 0.3s; }
+.flow-card:hover { border-color: rgba(56,189,248,0.32); transform: translateY(-4px); }
+.flow-num { font-size: 0.72rem; font-weight: 800; color: var(--bright); letter-spacing: 0.12em; margin-bottom: 1rem; }
+.flow-card h3 { font-size: 1.02rem; font-weight: 700; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+.flow-card p { font-size: 0.89rem; color: var(--muted); line-height: 1.75; }
+
+/* FUNKTIONEN */
+.feat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+.feat-card { background: var(--bg); padding: 2.2rem 1.8rem; transition: background 0.35s; display: flex; flex-direction: column; }
+.feat-card:hover { background: rgba(56,189,248,0.03); }
+.feat-icon { width: 42px; height: 42px; border-radius: 12px; background: rgba(17,103,140,0.22); border: 1px solid rgba(56,189,248,0.25); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin-bottom: 1.3rem; }
+.feat-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.7rem; letter-spacing: -0.02em; }
+.feat-card p { color: var(--muted); font-size: 0.87rem; line-height: 1.7; }
+.feat-tag { display: inline-block; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ring-recovery); font-weight: 800; margin-top: 0.8rem; }
+
+/* SPLIT (Bild + Text) */
+.split { display: grid; grid-template-columns: 1fr 1fr; align-items: stretch; border-radius: 28px; overflow: hidden; margin: 1.4rem 0; transition: border-color 0.3s; }
+.split:hover { border-color: rgba(56,189,248,0.28); }
+.split-img { position: relative; overflow: hidden; min-height: 460px; background: linear-gradient(150deg, rgba(17,103,140,0.10), rgba(21,33,74,0.22)); display: flex; align-items: center; justify-content: center; padding: 2.5rem; }
+.split-img img { max-height: 420px; width: auto; border-radius: 22px; display: block; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 30px 60px -20px rgba(0,0,0,0.65); }
+.split-content { padding: 3.2rem; display: flex; flex-direction: column; justify-content: center; }
+.split-content h3 { font-size: clamp(1.4rem, 2.2vw, 1.9rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.18; margin: 0.8rem 0 1.1rem; }
+.split-content p { color: var(--muted); font-size: 0.95rem; line-height: 1.85; }
+.split-list { list-style: none; margin-top: 1.4rem; display: flex; flex-direction: column; gap: 0.7rem; }
+.split-list li { font-size: 0.9rem; color: var(--muted); display: flex; gap: 0.7rem; align-items: flex-start; }
+.split-list li::before { content: '✓'; color: var(--bright); font-weight: 900; flex-shrink: 0; }
+
+/* ZIELGRUPPEN */
+.who-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
+.who-card { border-radius: 20px; padding: 2rem 1.7rem; transition: border-color 0.3s, transform 0.3s; }
+.who-card:hover { border-color: rgba(56,189,248,0.32); transform: translateY(-4px); }
+.who-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+.who-card p { color: var(--muted); font-size: 0.87rem; line-height: 1.7; }
+
+/* PREISE */
+.price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 900px; margin: 0 auto; }
+.price-card { border-radius: 24px; padding: 2.8rem 2.4rem; position: relative; display: flex; flex-direction: column; }
+.price-card.featured { border-color: rgba(56,189,248,0.35); background: rgba(17,103,140,0.09); }
+.price-tag { position: absolute; top: 1.4rem; right: 1.6rem; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #061621; background: var(--bright); padding: 0.25rem 0.7rem; border-radius: 99px; }
+.price-name { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--bright); margin-bottom: 1rem; }
+.price-value { font-size: 2.6rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; margin-bottom: 0.4rem; }
+.price-value small { font-size: 0.95rem; font-weight: 600; color: var(--faint); letter-spacing: 0; }
+.price-hint { font-size: 0.84rem; color: var(--faint); margin-bottom: 1.8rem; }
+.price-list { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; flex: 1; }
+.price-list li { font-size: 0.89rem; color: var(--muted); display: flex; gap: 0.7rem; align-items: flex-start; }
+.price-list li::before { content: '✓'; color: var(--bright); font-weight: 900; flex-shrink: 0; }
+.price-foot { font-size: 0.78rem; color: var(--faint); text-align: center; margin-top: 2rem; line-height: 1.7; }
+
+/* WARUM */
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+.why-card { border-radius: 20px; padding: 2.2rem 2rem; transition: border-color 0.3s, transform 0.3s; }
+.why-card:hover { border-color: rgba(56,189,248,0.32); transform: translateY(-4px); }
+.why-num { font-size: 3.4rem; font-weight: 900; line-height: 1; margin-bottom: 1.2rem; -webkit-text-stroke: 1px rgba(56,189,248,0.5); color: transparent; letter-spacing: -0.05em; }
+.why-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.7rem; letter-spacing: -0.02em; }
+.why-card p { color: var(--muted); font-size: 0.88rem; line-height: 1.75; }
+
+/* FAQ */
+.faq-wrap { max-width: 820px; margin: 0 auto; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q { width: 100%; text-align: left; background: none; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; padding: 1.5rem 2.5rem 1.5rem 0; cursor: pointer; position: relative; }
+.faq-q::after { content: '+'; position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%); color: var(--bright); font-size: 1.3rem; font-weight: 400; transition: transform 0.25s; }
+.faq-item.open .faq-q::after { transform: translateY(-50%) rotate(45deg); }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+.faq-item.open .faq-a { max-height: 420px; }
+.faq-a p { color: var(--muted); font-size: 0.92rem; line-height: 1.85; padding-bottom: 1.5rem; }
+
+/* CTA + WARTELISTE */
+.cta-section { text-align: center; }
+.cta-inner { border-radius: 28px; padding: 6rem 4rem; position: relative; overflow: hidden; }
+.cta-inner::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 620px; height: 620px; background: radial-gradient(circle, rgba(56,189,248,0.07) 0%, transparent 70%); pointer-events: none; }
+.cta-title { font-size: clamp(2.2rem, 4.4vw, 3.4rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.08; margin-bottom: 1.4rem; position: relative; }
+.cta-title em { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600; color: var(--bright); text-shadow: 0 0 30px rgba(56,189,248,0.35); }
+.cta-sub { font-size: 1.02rem; color: var(--muted); max-width: 520px; margin: 0 auto 2.4rem; line-height: 1.8; position: relative; }
+.wl-form { display: flex; gap: 0.8rem; justify-content: center; max-width: 520px; margin: 0 auto; position: relative; }
+.wl-form input[type="email"] { flex: 1; min-width: 0; padding: 0.95rem 1.3rem; border-radius: 99px; border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.05); color: var(--text); font-family: 'Inter', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+.wl-form input[type="email"]::placeholder { color: var(--faint); }
+.wl-form input[type="email"]:focus { border-color: rgba(56,189,248,0.6); box-shadow: 0 0 0 3px rgba(56,189,248,0.15); }
+.wl-msg { position: relative; margin-top: 1.4rem; font-size: 0.92rem; color: var(--bright); font-weight: 600; }
+.wl-msg.err { color: var(--warning); }
+.cta-note { display: block; font-size: 0.78rem; color: var(--faint); margin-top: 1.6rem; position: relative; }
+.cta-note a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* FOOTER */
+footer { background: rgba(9,9,18,0.85); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border-top: 1px solid var(--border); padding: 4rem 0 2.5rem; position: relative; z-index: 10; }
+.footer-top { display: grid; grid-template-columns: 280px 1fr; gap: 4rem; margin-bottom: 3rem; }
+.footer-logo { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; }
+.footer-logo img { height: 34px; width: 34px; border-radius: 9px; display: block; }
+.footer-logo-text { font-size: 1rem; font-weight: 900; letter-spacing: 0.04em; }
+.footer-tagline { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+.footer-links-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.footer-col-title { font-size: 0.72rem; font-weight: 800; color: var(--text); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+.footer-col a { display: block; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 0.6rem; transition: color 0.2s; }
+.footer-col a:hover { color: var(--text); }
+.footer-bottom { border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+.footer-copy { font-size: 0.78rem; color: var(--faint); }
+.footer-copy a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.footer-copy a:hover { color: var(--bright); }
+
+/* COOKIE-BANNER */
+.cookie-banner { position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem; max-width: 480px; margin: 0 auto; z-index: 2000; padding: 1.6rem 1.8rem; background: rgba(12,12,22,0.94); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7); transform: translateY(160%); transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+.cookie-banner.show { transform: translateY(0); }
+.cookie-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; }
+.cookie-text { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.2rem; }
+.cookie-text a { color: var(--bright); text-decoration: none; }
+.cookie-text a:hover { text-decoration: underline; }
+.cookie-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.cookie-btn { flex: 1; min-width: 120px; padding: 0.7rem 1.2rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: none; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.cookie-accept { background: var(--bright); color: #061621; }
+.cookie-accept:hover { box-shadow: 0 0 20px rgba(56,189,248,0.4); transform: translateY(-1px); }
+.cookie-decline { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid rgba(255,255,255,0.12); }
+.cookie-decline:hover { background: rgba(255,255,255,0.1); }
+
+/* REVEAL */
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+.reveal.visible { opacity: 1; transform: none; }
+[data-delay="1"] { transition-delay: 0.08s; }
+[data-delay="2"] { transition-delay: 0.16s; }
+[data-delay="3"] { transition-delay: 0.24s; }
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .hero-visual { max-width: 320px; margin: 0 auto; }
+  .feat-grid { grid-template-columns: repeat(2, 1fr); }
+  .who-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: 1fr; }
+  .flow-grid { grid-template-columns: 1fr; }
+  .split, .split.flip { grid-template-columns: 1fr; }
+  .split.flip .split-img { order: -1; }
+  .split-img { min-height: 0; padding: 2rem; }
+  .split-img img { max-height: 380px; position: static; height: auto; }
+  .split-content { padding: 2.4rem 2rem; }
+  .sec-head { flex-direction: column; align-items: flex-start; gap: 1.2rem; }
+  .sec-sub { text-align: left; max-width: 100%; }
+  .footer-top { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+@media (max-width: 768px) {
+  nav { padding: 0.9rem 0; }
+  .nav-inner { padding: 0 1.5rem; }
+  .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; background: rgba(7,7,15,0.98); padding: 1.5rem; gap: 1.4rem; border-bottom: 1px solid var(--border); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); }
+  .nav-links.open { display: flex; }
+  .nav-burger { display: flex; }
+  .wrap { padding: 0 1.5rem; }
+  section { padding: 4.5rem 0; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .who-grid { grid-template-columns: 1fr; }
+  .price-grid { grid-template-columns: 1fr; }
+  .cta-inner { padding: 3.5rem 1.5rem; }
+  .wl-form { flex-direction: column; }
+  .footer-links-grid { grid-template-columns: 1fr 1fr; }
+  .trust-inner { flex-direction: column; gap: 0.9rem; }
+  .rings { gap: 1rem; }
+  .ring i { width: 46px; height: 46px; }
+}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "YOU",
+  "applicationCategory": "HealthApplication",
+  "operatingSystem": "iOS",
+  "url": "https://you.yg-media.de/",
+  "image": "https://you.yg-media.de/assets/you-keyvisual.webp",
+  "inLanguage": "de-DE",
+  "description": "YOU ist die App für Körper und Geist: Ein tiefes KI-Onboarding baut ein psychologisches Profil, vier Ringe zeigen den Tageszustand, dazu Habits, Journal, Check-ins, Training, Ernährung mit Foto-Scan, Schlaf und Recovery mit dem YOU Band. Kostenlos startbar, YOU Pro als Abo.",
+  "featureList": [
+    "KI-Onboarding mit Digitalem Selbst",
+    "Perspektiven auf Persönlichkeit, Werte, Schatten, Antrieb und Muster",
+    "Vier Ringe für Körper, Geist, Konsistenz und Erholung",
+    "Habits mit Streaks und Kalender",
+    "Journal und Check-in",
+    "Training mit Sessions und Vorlagen",
+    "Ernährung mit KI-Foto-Scan",
+    "Gewicht, Wasser und Supplements",
+    "Muster und Impulse",
+    "Ziele und Prioritäten",
+    "Score und Trends",
+    "Schlaf mit Hypnogramm",
+    "Recovery",
+    "YOU Band",
+    "Body-Echo",
+    "Identitätskarte",
+    "Widgets",
+    "Erinnerungen und Morgen-Feedback"
+  ],
+  "offers": [
+    { "@type": "Offer", "name": "YOU Free", "price": "0", "priceCurrency": "EUR" }
+  ],
+  "publisher": {
+    "@type": "Organization",
+    "name": "YG MEDIA",
+    "url": "https://yg-media.de/",
+    "email": "info@yg-media.de"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Was ist YOU?", "acceptedAnswer": { "@type": "Answer", "text": "YOU ist eine iOS App, die Körper und Geist zusammen erfasst. Ein tiefes Onboarding baut mit KI ein psychologisches Profil, das Digitale Selbst. Danach trackst du Habits, Journal, Check-ins, Training, Ernährung und Gewicht in einer App, und mit dem YOU Band kommen Schlaf, Puls, HRV und Recovery dazu. Vier Ringe zeigen jeden Tag, wo du stehst." } },
+    { "@type": "Question", "name": "Wann kommt YOU in den App Store?", "acceptedAnswer": { "@type": "Answer", "text": "YOU ist im Aufbau und wird gerade zusammen mit dem YOU Band getestet. Der Start ist für iOS geplant. Wer sich in die Warteliste einträgt, bekommt eine Mail, sobald die App im App Store steht." } },
+    { "@type": "Question", "name": "Brauche ich das YOU Band?", "acceptedAnswer": { "@type": "Answer", "text": "Nein. YOU funktioniert vollständig ohne Band: Onboarding, Digitales Selbst, Ringe, Tracking und Statistik. Das Band ergänzt Schlaf, Puls, HRV, Stress und Recovery rund um die Uhr und misst im Onboarding mit, wo dein Körper stärker reagiert." } },
+    { "@type": "Question", "name": "Was kostet YOU?", "acceptedAnswer": { "@type": "Answer", "text": "YOU ist kostenlos startbar: Onboarding mit einer Generierung des Digitalen Selbst, das komplette manuelle Tracking, Statistik, Ringe und drei KI-Foto-Scans zum Kennenlernen. YOU Pro bringt den Foto-Scan ohne Limit, die Neu-Generierung des Digitalen Selbst und alle künftigen KI-Funktionen. Der Preis wird zum App-Store-Start bekannt gegeben, Pro lässt sich 30 Tage kostenlos testen und ist jederzeit kündbar." } },
+    { "@type": "Question", "name": "Stellt YOU Diagnosen?", "acceptedAnswer": { "@type": "Answer", "text": "Nein. YOU misst und beobachtet, aber es stellt keine medizinische oder psychologische Diagnose. Ein Körpersignal wird zur Einladung, genauer hinzusehen, nie zur Aussage über eine Störung. Die KI bewertet nicht, sie reflektiert, und zeigt Stärken so klar wie Spannungen." } },
+    { "@type": "Question", "name": "Wo liegen meine Daten?", "acceptedAnswer": { "@type": "Answer", "text": "Deine Daten liegen auf Servern in der EU (Irland). Die KI-Auswertung läuft einmal beim Onboarding und bei jeder Neu-Generierung, im Alltag rechnet die App ohne KI. Dein Konto samt allen Daten kannst du jederzeit in der App löschen." } },
+    { "@type": "Question", "name": "Was misst das YOU Band?", "acceptedAnswer": { "@type": "Answer", "text": "Puls als Tagesserie, Schlaf mit Phasen von wach bis Tiefschlaf und REM, HRV, Stress, Sauerstoffsättigung, Schritte, Kalorien und Workouts. Der Akku hält 30 bis 40 Tage. Das Band verbindet sich per Bluetooth mit der App, und wer es besitzt, bekommt die komplette Band-Strecke ohne Abo." } },
+    { "@type": "Question", "name": "Gibt es YOU für Android?", "acceptedAnswer": { "@type": "Answer", "text": "Zum Start ist YOU eine native iOS App mit Widgets für Home- und Sperrbildschirm. Eine Android-Version ist nicht Teil des Starts." } }
+  ]
+}
+</script>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="orb-wrap">
+  <div class="orb orb-1"></div><div class="orb orb-2"></div>
+  <div class="orb orb-3"></div><div class="orb orb-4"></div>
+</div>
+
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">
+      <img src="/assets/you-icon-96.webp" alt="" width="96" height="96">
+      <span class="nav-logo-text">YOU</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#funktionen">Funktionen</a>
+      <a href="#ablauf">So funktioniert es</a>
+      <a href="#band">YOU Band</a>
+      <a href="#faq">FAQ</a>
+      <a href="/en/" class="nav-lang" hreflang="en" aria-label="English version">EN</a>
+      <a href="#warteliste" class="nav-cta" data-track="waitlist-nav">Auf die Warteliste</a>
+    </div>
+    <button type="button" class="nav-burger" id="burger" aria-label="Menü" aria-expanded="false" aria-controls="navLinks"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-badge"><span class="hero-badge-dot"></span>Bald im App Store · iOS</div>
+        <h1 class="hero-h1">Andere messen den Körper.<br><em>YOU misst Körper und Geist.</em></h1>
+        <p class="hero-sub">YOU ist das Life Operating System: Ein tiefes KI-Onboarding baut dein Digitales Selbst, vier Ringe zeigen jeden Tag, wo du stehst, und das YOU Band misst Schlaf, Puls und Erholung rund um die Uhr. Training, Ernährung, Journal, Habits und Muster in einer App.</p>
+        <div class="hero-btns">
+          <a href="#warteliste" class="btn btn-primary" data-track="waitlist-hero">Auf die Warteliste</a>
+          <a href="https://www.behance.net/gallery/217934173" target="_blank" rel="noopener" class="btn btn-ghost" data-track="behance-hero">Auf Behance ansehen</a>
+        </div>
+        <span class="hero-note">Kostenlos startbar. YOU Pro als Abo mit 30 Tagen Testphase, Preis zum Start.</span>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-glow"></div>
+        <img src="/assets/you-keyvisual-760.webp" alt="YOU Keyvisual, Chrom-Figur mit der Wortmarke YOU" class="hero-logo" width="760" height="760" fetchpriority="high">
+        <div class="rings" aria-label="Die vier Ringe von YOU">
+          <div class="ring"><i style="--c: var(--ring-body); --p: 72"></i>Körper</div>
+          <div class="ring"><i style="--c: var(--ring-mind); --p: 84"></i>Geist</div>
+          <div class="ring"><i style="--c: var(--ring-consistency); --p: 60"></i>Konsistenz</div>
+          <div class="ring"><i style="--c: var(--ring-recovery); --p: 91"></i>Erholung</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="wrap">
+    <div class="trust-inner">
+      <div class="trust-item"><span class="trust-check">✓</span>Kostenlos startbar</div>
+      <div class="trust-item"><span class="trust-check">✓</span>KI-Onboarding mit psychologischem Profil</div>
+      <div class="trust-item"><span class="trust-check">✓</span>Vier Ringe für den Tag</div>
+      <div class="trust-item"><span class="trust-check">✓</span>YOU Band optional</div>
+      <div class="trust-item"><span class="trust-check">✓</span>Server in der EU</div>
+      <div class="trust-item"><span class="trust-check">✓</span>Beobachtung statt Diagnose</div>
+    </div>
+  </div>
+</div>
+
+<section id="ablauf">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">So funktioniert es</span>
+        <h2 class="sec-title">Erzählen. Ankommen. <em>Leben.</em></h2>
+      </div>
+      <p class="sec-sub">Die KI arbeitet einmal, beim Onboarding. Danach läuft YOU deterministisch: Was du trackst, siehst du sofort, ohne dass im Hintergrund etwas über dich urteilt.</p>
+    </div>
+    <div class="flow-grid">
+      <div class="flow-card glass reveal">
+        <div class="flow-num">01 · ERZÄHLEN</div>
+        <h3>Das Onboarding stellt die Fragen, die andere Apps nicht stellen.</h3>
+        <p>Persönlichkeit, Werte, Schatten, Antrieb, Ziele und Muster, in Phasen erzählt, mit Fortschritt und Übergängen. Mit dem YOU Band hört dein Körper mit: Wo der Puls stärker reagiert, merkt YOU es sich als Einladung zum zweiten Blick.</p>
+      </div>
+      <div class="flow-card glass reveal" data-delay="1">
+        <div class="flow-num">02 · ANKOMMEN</div>
+        <h3>Aus deinen Antworten entsteht dein Digitales Selbst.</h3>
+        <p>Die KI baut einmal dein Profil mit mehreren Perspektiven und legt Pläne für Training, Ernährung und Habits an. Der Moment, in dem es entsteht, ist der erste Höhepunkt der App, nicht ein Ladebalken.</p>
+      </div>
+      <div class="flow-card glass reveal" data-delay="2">
+        <div class="flow-num">03 · LEBEN</div>
+        <h3>Today ist die Kommandozentrale, der Data-Tab die Erkenntnis.</h3>
+        <p>Ringe, Check-in, Journal, Habits, Training, Mahlzeiten und Gewicht direkt auf der Karte loggen, ein Tipp statt drei. Score, Trends, Nächte und Recovery zeigen, was daraus wird.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="funktionen">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">Funktionen</span>
+        <h2 class="sec-title">Alles, was YOU <em>heute schon kann.</em></h2>
+      </div>
+      <p class="sec-sub">Gebaut und in der Testphase mit dem YOU Band im Einsatz. Funktionen mit der Marke Band brauchen das YOU Band, alles andere läuft mit der App allein.</p>
+    </div>
+    <div class="feat-grid reveal">
+      <div class="feat-card"><div class="feat-icon">🧬</div><h3>Digitales Selbst</h3><p>Ein tiefes Onboarding, dann baut die KI einmal dein Profil: Persönlichkeit, Werte, Schatten, Antrieb und Muster.</p></div>
+      <div class="feat-card"><div class="feat-icon">🪞</div><h3>Perspektiven</h3><p>Viele Blicke auf denselben Menschen, neutral gespiegelt. Stärken so klar wie Spannungen, nie ein Urteil.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔗</div><h3>Verknüpfungen</h3><p>Integrität, Passung, Beziehung und Gegenkraft: Einsichten aus der Kombination deiner Antworten, nicht aus einzelnen Feldern.</p></div>
+      <div class="feat-card"><div class="feat-icon">⭕</div><h3>Vier Ringe</h3><p>Körper, Geist, Konsistenz und mit Band Erholung. Ein Blick auf den Today-Kopf, und du weißt, wo der Tag steht.</p></div>
+      <div class="feat-card"><div class="feat-icon">✅</div><h3>Habits</h3><p>Habits mit Streaks, drei Zuständen, Notizen und Kalender-Bändern über Wochen und Monate.</p></div>
+      <div class="feat-card"><div class="feat-icon">📓</div><h3>Journal und Check-in</h3><p>Täglicher Check-in, Journal mit Zeitfenster, Stimmung und Energie im Verlauf.</p></div>
+      <div class="feat-card"><div class="feat-icon">🏋️</div><h3>Training</h3><p>Sessions, Übungen zum Aufklappen, Vorlagen und eine Statistik mit Einheiten, Sätzen und Volumen.</p></div>
+      <div class="feat-card"><div class="feat-icon">📷</div><h3>Ernährung per Foto</h3><p>Mahlzeit fotografieren, Kalorien und Nährwerte kommen von der KI. Dazu Barcode, Lebensmittelsuche und Mahlzeiten-Plan.</p></div>
+      <div class="feat-card"><div class="feat-icon">💧</div><h3>Gewicht, Wasser, Supplements</h3><p>Schnell-Log direkt auf der Today-Karte, ohne Tab-Sprung. Gewicht mit Trend.</p></div>
+      <div class="feat-card"><div class="feat-icon">🌀</div><h3>Muster und Impulse</h3><p>Wiederkehrende Impulse erkennen und Tag für Tag festhalten: gehalten oder nachgegeben, mit Auslöser und Notiz.</p></div>
+      <div class="feat-card"><div class="feat-icon">🎯</div><h3>Ziele und Prioritäten</h3><p>Ziele aus dem Onboarding, Prioritäten für den Tag, beides an einem Ort.</p></div>
+      <div class="feat-card"><div class="feat-icon">📈</div><h3>Score und Trends</h3><p>Data-Tab mit YOU Score aus Baseline und Momentum, Wochen-Dots, Trend-Karten und Zeitraum-Filter.</p></div>
+      <div class="feat-card"><div class="feat-icon">🌙</div><h3>Schlaf im Detail</h3><p>Die Nacht als Hypnogramm mit Phasen und Wach-Momenten, Bettzeit und Aufwachzeit gegen dein Soll.<span class="feat-tag">Mit Band</span></p></div>
+      <div class="feat-card"><div class="feat-icon">💜</div><h3>Recovery</h3><p>Erholung aus HRV und Schlaf als ruhiges Instrument, sanft dargestellt, ohne Ampel-Urteil.<span class="feat-tag">Mit Band</span></p></div>
+      <div class="feat-card"><div class="feat-icon">⌚</div><h3>YOU Band</h3><p>Puls, Schlaf, HRV, Stress, Schritte und Workouts rund um die Uhr, 30 bis 40 Tage Akku, Kopplung wie ein Siegel.</p></div>
+      <div class="feat-card"><div class="feat-icon">💓</div><h3>Body-Echo</h3><p>Im Onboarding hört der Körper mit. Wo der Puls stärker reagiert, bekommst du eine Einladung zum zweiten Blick.<span class="feat-tag">Mit Band</span></p></div>
+      <div class="feat-card"><div class="feat-icon">🪪</div><h3>Identitätskarte</h3><p>Das neue Selbstbild in Zeilen: sein, können, haben. Vorschläge aus deinen Traits und Zielen, du entscheidest.</p></div>
+      <div class="feat-card"><div class="feat-icon">📱</div><h3>Widgets</h3><p>Home- und Sperrbildschirm-Widgets mit Ringen und Tagesstand, ehrlich leer, wenn der Tag noch nicht begonnen hat.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔔</div><h3>Erinnerungen und Morgen-Feedback</h3><p>Reminder mit Aktionen direkt in der Mitteilung, morgens ein ehrlicher Blick auf die Nacht und auf gestern.</p></div>
+      <div class="feat-card"><div class="feat-icon">🔒</div><h3>Dein Konto, deine Daten</h3><p>Server in der EU. Konto und alle Daten jederzeit in der App löschbar, ohne Rückfrage per Mail.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="apps">
+  <div class="wrap">
+    <div class="split glass reveal">
+      <div class="split-img"><img src="/assets/you-app-today.webp" alt="Today-Ansicht der YOU App mit vier Ringen und Karten für Check-in, Journal und Habits" loading="lazy" width="720" height="1566"></div>
+      <div class="split-content">
+        <span class="eyebrow">Today</span>
+        <h3>Ein Blick, und du weißt, wo der Tag steht.</h3>
+        <p>Oben die vier Ringe, darunter die Karten des Tages: Check-in, Journal, Habits, Training, Mahlzeiten, Gewicht und Schlaf. Jede Karte zeigt den Stand, nimmt den Schnell-Log direkt an und führt bei Bedarf in die Tiefe.</p>
+        <ul class="split-list">
+          <li>Ringe für Körper, Geist, Konsistenz und Erholung</li>
+          <li>Loggen auf der Karte, ohne Tab-Sprung</li>
+          <li>Jede Karte in ihrer Bereichsfarbe, Glas mit Tiefe</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="split flip glass reveal">
+      <div class="split-content">
+        <span class="eyebrow">Digitales Selbst</span>
+        <h3>Der Spiegel, der auch zeigt, was du nicht sagst.</h3>
+        <p>Aus dem Onboarding entstehen Perspektiven auf Persönlichkeit, Werte, Schatten, Antrieb und Muster, dazu Verknüpfungen wie Integrität und Passung. Die KI bewertet nicht, sie reflektiert: Stärken stehen so klar da wie Spannungen.</p>
+        <ul class="split-list">
+          <li>Big Five, Persönlichkeitsfarben, Werte und Ziele</li>
+          <li>Verknüpfungen aus mehreren Antwortfeldern</li>
+          <li>Neutral, ausgewogen, mit Handlungsfähigkeit am Ende</li>
+        </ul>
+      </div>
+      <div class="split-img"><img src="/assets/you-app-selbst.webp" alt="Digitales Selbst in der YOU App mit Perspektiven und Persönlichkeitsfarben" loading="lazy" width="720" height="1566"></div>
+    </div>
+
+    <div class="split glass reveal">
+      <div class="split-img"><img src="/assets/you-app-daten.webp" alt="Data-Tab der YOU App mit Score, Trends und Schlaf-Hypnogramm" loading="lazy" width="720" height="1566"></div>
+      <div class="split-content">
+        <span class="eyebrow">Daten</span>
+        <h3>Score, Trends und die ganze Nacht.</h3>
+        <p>Der Data-Tab macht aus Tracking Erkenntnis: YOU Score aus Baseline und Momentum, Wochen-Dots, Trend-Karten, Schlaf als Hypnogramm mit Wach-Momenten und ein Recovery-Instrument, das ruhig bleibt statt zu warnen.</p>
+        <ul class="split-list">
+          <li>Zeitraum-Filter von der Woche bis zum Quartal</li>
+          <li>Habits, Training und Muster mit Kalender-Bändern</li>
+          <li>Zähl-Animationen und Arc-Gauges statt nackter Zahlen</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="split flip glass reveal" id="band">
+      <div class="split-content">
+        <span class="eyebrow">YOU Band</span>
+        <h3>Das Band misst. Die App versteht.</h3>
+        <p>Ohne Band lernst du deinen Geist kennen. Mit Band lernst du, wie dein Körper darauf antwortet: Puls, Schlafphasen, HRV, Stress und Recovery rund um die Uhr, automatisch erkannte Workouts, und im Onboarding das Body-Echo, wo dein Körper mitspricht.</p>
+        <ul class="split-list">
+          <li>30 bis 40 Tage Akkulaufzeit, Kopplung per Bluetooth</li>
+          <li>Wer das Band besitzt, bekommt die ganze Band-Strecke ohne Abo</li>
+          <li>Kein Band heißt nie ein leerer Screen, sondern eine ruhige manuelle Alternative</li>
+        </ul>
+      </div>
+      <div class="split-img"><img src="/assets/you-app-band.webp" alt="YOU Band in der App mit Puls, Schlaf und Recovery" loading="lazy" width="720" height="1566"></div>
+    </div>
+
+    <div class="split glass reveal">
+      <div class="split-img"><img src="/assets/you-app-ernaehrung.webp" alt="Ernährung in der YOU App mit KI-Foto-Scan einer Mahlzeit" loading="lazy" width="720" height="1566"></div>
+      <div class="split-content">
+        <span class="eyebrow">Ernährung</span>
+        <h3>Fotografieren statt eintippen.</h3>
+        <p>Mahlzeit fotografieren, die KI schätzt Kalorien und Nährwerte. Dazu Barcode-Scan, Lebensmittelsuche und ein Mahlzeiten-Plan, den du abhakst. Drei Scans sind frei, YOU Pro hebt das Limit auf.</p>
+        <ul class="split-list">
+          <li>Foto-Scan mit Kalorien, Eiweiß, Kohlenhydraten und Fett</li>
+          <li>Barcode und Suche in der Lebensmittel-Datenbank</li>
+          <li>Wasser und Supplements mit einem Tipp</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="split flip glass reveal">
+      <div class="split-content">
+        <span class="eyebrow">Muster und Habits</span>
+        <h3>Was sich wiederholt, wird sichtbar.</h3>
+        <p>Impulse und Gewohnheiten laufen als Kalender-Bänder über Wochen und Monate. Jeder Tag ist antippbar: Status, Uhrzeit, Auslöser, Notiz. So siehst du nicht nur, ob du dranbleibst, sondern wann es schwer wird.</p>
+        <ul class="split-list">
+          <li>Streaks, Kreuze und Haken im Kalender</li>
+          <li>Zeitraum-Filter Woche, Monat, drei Monate</li>
+          <li>Moment-Overlay mit Feier-Animation beim Schließen eines Rings</li>
+        </ul>
+      </div>
+      <div class="split-img"><img src="/assets/you-app-muster.webp" alt="Muster-Statistik der YOU App mit Kalender-Band" loading="lazy" width="720" height="1566"></div>
+    </div>
+  </div>
+</section>
+
+<section id="fuer-wen">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">Für wen</span>
+        <h2 class="sec-title">Für Menschen, die mehr wollen als <em>Schritte zählen.</em></h2>
+      </div>
+      <p class="sec-sub">YOU ist kein Fitness-Tracker mit Notizfunktion. Es ist der Versuch, den ganzen Menschen zu erfassen, und es nimmt Rücksicht auf die, denen es gerade nicht leicht fällt.</p>
+    </div>
+    <div class="who-grid">
+      <div class="who-card glass reveal"><h3>Menschen im Umbruch</h3><p>Neuer Job, Trennung, Neustart. Wenn sich alles bewegt, hilft ein Spiegel, der ruhig bleibt und zeigt, was gerade wirklich passiert.</p></div>
+      <div class="who-card glass reveal" data-delay="1"><h3>Sportler mit Kopf</h3><p>Training, Recovery und Schlaf im Blick, und dazu die Frage, warum der Kopf an manchen Tagen nicht mitzieht.</p></div>
+      <div class="who-card glass reveal" data-delay="2"><h3>Selbstständige und Gründer</h3><p>Energie, Konsistenz und Muster als Frühwarnsystem, bevor der Körper die Rechnung stellt.</p></div>
+      <div class="who-card glass reveal" data-delay="3"><h3>Alle, die sich selbst verstehen wollen</h3><p>Nicht optimieren um jeden Preis, sondern hinsehen. YOU zeigt Stärken so deutlich wie Schatten und lässt dich entscheiden, was du damit machst.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="preise">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">Free und Pro</span>
+        <h2 class="sec-title">Kostenlos starten, <em>Pro für die KI.</em></h2>
+      </div>
+      <p class="sec-sub">Alles, was ohne laufende KI-Kosten geht, ist frei. YOU Pro trägt genau die Funktionen, die bei jeder Nutzung rechnen.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price-card glass reveal">
+        <div class="price-name">YOU Free</div>
+        <div class="price-value">0 €<small> / dauerhaft</small></div>
+        <div class="price-hint">Ohne Abo, ohne Zeitlimit</div>
+        <ul class="price-list">
+          <li>Onboarding und eine Generierung des Digitalen Selbst</li>
+          <li>Today, vier Ringe und das komplette manuelle Tracking</li>
+          <li>Habits, Journal, Check-in, Training, Gewicht, Wasser, Supplements, Muster</li>
+          <li>Statistik-Karten, Kalender-Bänder, Score, Streaks und Badges</li>
+          <li>Drei KI-Foto-Scans zum Kennenlernen, Lebensmittelsuche und Barcode</li>
+          <li>Erinnerungen, Widgets, Morgen-Feedback</li>
+          <li>Mit YOU Band die komplette Band-Strecke</li>
+        </ul>
+        <a href="#warteliste" class="btn btn-ghost" data-track="waitlist-free">Auf die Warteliste</a>
+      </div>
+      <div class="price-card glass featured reveal" data-delay="1">
+        <span class="price-tag">30 Tage testen</span>
+        <div class="price-name">YOU Pro</div>
+        <div class="price-value">Abo<small> · Preis zum Start</small></div>
+        <div class="price-hint">Monatlich oder jährlich, jederzeit kündbar</div>
+        <ul class="price-list">
+          <li>Alles aus Free</li>
+          <li>KI-Foto-Scan für Mahlzeiten ohne Limit</li>
+          <li>Neu-Generierung des Digitalen Selbst und der Pläne, sooft du willst</li>
+          <li>Alle künftigen KI-Funktionen</li>
+          <li>30 Tage kostenlos testen</li>
+        </ul>
+        <a href="#warteliste" class="btn btn-primary" data-track="waitlist-pro">Launch-Info erhalten</a>
+      </div>
+    </div>
+    <p class="price-foot">Der Preis von YOU Pro wird mit dem App-Store-Start veröffentlicht. Das YOU Band ist Hardware und wird separat verkauft, die Band-Strecke in der App ist im Kauf enthalten.</p>
+  </div>
+</section>
+
+<section id="warum">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">Warum YOU</span>
+        <h2 class="sec-title">Drei Haltungen, die <em>nicht verhandelbar</em> sind.</h2>
+      </div>
+    </div>
+    <div class="why-grid">
+      <div class="why-card glass reveal"><div class="why-num">01</div><h3>Der psychologische Layer</h3><p>Der Körper allein erklärt nicht, warum du morgens liegen bleibst oder abends nicht abschaltest. YOU misst Körper und Geist zusammen, weil das eine ohne das andere nur die halbe Geschichte ist.</p></div>
+      <div class="why-card glass reveal" data-delay="1"><div class="why-num">02</div><h3>Neutralität des Spiegels</h3><p>Die KI bewertet nicht, sie reflektiert. Ein starker Mensch mit einer Angst sieht beides, nicht nur die Angst. Jede Auswertung endet mit dem, was du tun kannst, nicht mit einem Urteil.</p></div>
+      <div class="why-card glass reveal" data-delay="2"><div class="why-num">03</div><h3>Beobachtung statt Diagnose</h3><p>YOU stellt keine medizinische oder psychologische Diagnose. Ein Signal ist eine Einladung, genauer hinzusehen. Das schützt dich, und es hält YOU aus dem Territorium, in dem eine App nichts zu suchen hat.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="eyebrow">FAQ</span>
+        <h2 class="sec-title">Häufige <em>Fragen.</em></h2>
+      </div>
+    </div>
+    <div class="faq-wrap reveal">
+      <div class="faq-item"><button class="faq-q" type="button">Was ist YOU?</button><div class="faq-a"><p>YOU ist eine iOS App, die Körper und Geist zusammen erfasst. Ein tiefes Onboarding baut mit KI ein psychologisches Profil, das Digitale Selbst. Danach trackst du Habits, Journal, Check-ins, Training, Ernährung und Gewicht in einer App, und mit dem YOU Band kommen Schlaf, Puls, HRV und Recovery dazu. Vier Ringe zeigen jeden Tag, wo du stehst.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Wann kommt YOU in den App Store?</button><div class="faq-a"><p>YOU ist im Aufbau und wird gerade zusammen mit dem YOU Band getestet. Der Start ist für iOS geplant. Wer sich in die Warteliste einträgt, bekommt eine Mail, sobald die App im App Store steht.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Brauche ich das YOU Band?</button><div class="faq-a"><p>Nein. YOU funktioniert vollständig ohne Band: Onboarding, Digitales Selbst, Ringe, Tracking und Statistik. Das Band ergänzt Schlaf, Puls, HRV, Stress und Recovery rund um die Uhr und misst im Onboarding mit, wo dein Körper stärker reagiert.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Was kostet YOU?</button><div class="faq-a"><p>YOU ist kostenlos startbar: Onboarding mit einer Generierung des Digitalen Selbst, das komplette manuelle Tracking, Statistik, Ringe und drei KI-Foto-Scans zum Kennenlernen. YOU Pro bringt den Foto-Scan ohne Limit, die Neu-Generierung des Digitalen Selbst und alle künftigen KI-Funktionen. Der Preis wird zum App-Store-Start bekannt gegeben, Pro lässt sich 30 Tage kostenlos testen und ist jederzeit kündbar.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Stellt YOU Diagnosen?</button><div class="faq-a"><p>Nein. YOU misst und beobachtet, aber es stellt keine medizinische oder psychologische Diagnose. Ein Körpersignal wird zur Einladung, genauer hinzusehen, nie zur Aussage über eine Störung. Die KI bewertet nicht, sie reflektiert, und zeigt Stärken so klar wie Spannungen.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Wo liegen meine Daten?</button><div class="faq-a"><p>Deine Daten liegen auf Servern in der EU (Irland). Die KI-Auswertung läuft einmal beim Onboarding und bei jeder Neu-Generierung, im Alltag rechnet die App ohne KI. Dein Konto samt allen Daten kannst du jederzeit in der App löschen.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Was misst das YOU Band?</button><div class="faq-a"><p>Puls als Tagesserie, Schlaf mit Phasen von wach bis Tiefschlaf und REM, HRV, Stress, Sauerstoffsättigung, Schritte, Kalorien und Workouts. Der Akku hält 30 bis 40 Tage. Das Band verbindet sich per Bluetooth mit der App, und wer es besitzt, bekommt die komplette Band-Strecke ohne Abo.</p></div></div>
+      <div class="faq-item"><button class="faq-q" type="button">Gibt es YOU für Android?</button><div class="faq-a"><p>Zum Start ist YOU eine native iOS App mit Widgets für Home- und Sperrbildschirm. Eine Android-Version ist nicht Teil des Starts.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="warteliste" class="cta-section">
+  <div class="wrap">
+    <div class="cta-inner glass reveal">
+      <h2 class="cta-title">Erfahre es <em>zuerst.</em></h2>
+      <p class="cta-sub">Trag dich ein, und du bekommst eine Mail, sobald YOU im App Store steht. Keine Newsletter, keine Weitergabe, eine Mail zum Start.</p>
+      <form class="wl-form" id="waitlistForm" action="https://formspree.io/f/xojbbzad" method="POST">
+        <input type="hidden" name="_subject" value="YOU Warteliste">
+        <input type="hidden" name="produkt" value="YOU">
+        <input type="hidden" name="sprache" value="de">
+        <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <input type="email" name="email" required placeholder="deine@mail.de" aria-label="E-Mail-Adresse">
+        <button type="submit" class="btn btn-primary" data-track="waitlist-submit">Eintragen</button>
+      </form>
+      <p class="wl-msg" id="waitlistOk" hidden>Danke, du stehst auf der Liste. Wir melden uns zum Start.</p>
+      <p class="wl-msg err" id="waitlistErr" hidden>Das hat gerade nicht geklappt. Schreib uns kurz an info@yg-media.de.</p>
+      <span class="cta-note">Mit dem Eintragen stimmst du zu, dass wir deine Adresse für die Launch-Info speichern. Details in der <a href="https://yg-media.de/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a>.</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">
+          <img src="/assets/you-icon-96.webp" alt="" width="96" height="96">
+          <span class="footer-logo-text">YOU</span>
+        </div>
+        <p class="footer-tagline">Andere messen den Körper.<br>YOU misst Körper und Geist.</p>
+      </div>
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <div class="footer-col-title">Produkt</div>
+          <a href="#funktionen">Funktionen</a>
+          <a href="#band">YOU Band</a>
+          <a href="#preise">Free und Pro</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">YG MEDIA</div>
+          <a href="https://yg-media.de/" target="_blank" rel="noopener">Unternehmen</a>
+          <a href="https://usely.yg-media.de/" target="_blank" rel="noopener">USELY</a>
+          <a href="https://www.behance.net/gallery/217934173" target="_blank" rel="noopener" data-track="behance-footer">Behance</a>
+          <a href="mailto:info@yg-media.de">Kontakt</a>
+        </div>
+        <div class="footer-col">
+          <div class="footer-col-title">Rechtliches</div>
+          <a href="https://yg-media.de/impressum" target="_blank" rel="noopener">Impressum</a>
+          <a href="https://yg-media.de/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 YOU · Ein Produkt von <a href="https://yg-media.de/" target="_blank" rel="noopener">YG MEDIA</a></p>
+      <p class="footer-copy">info@yg-media.de</p>
+    </div>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookieBanner">
+  <div class="cookie-title">Diese Website verwendet Cookies</div>
+  <div class="cookie-text">Diese Website nutzt Cookies, um die Nutzung zu analysieren und das Angebot zu verbessern. Du entscheidest selbst, was du zulässt. Mehr dazu in der <a href="https://yg-media.de/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a>.</div>
+  <div class="cookie-btns">
+    <button class="cookie-btn cookie-decline" id="cookieDecline">Nur notwendige</button>
+    <button class="cookie-btn cookie-accept" id="cookieAccept">Alle akzeptieren</button>
+  </div>
+</div>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+const burger = document.getElementById('burger');
+const navLinks = document.getElementById('navLinks');
+burger.addEventListener('click', () => { const open = navLinks.classList.toggle('open'); burger.setAttribute('aria-expanded', String(open)); });
+document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => { navLinks.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); }));
+
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => { const t = document.querySelector(a.getAttribute('href')); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); } });
+});
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    item.classList.toggle('open');
+    if (item.classList.contains('open') && window.gtag) window.gtag('event', 'faq_open', { frage: q.textContent.trim() });
+  });
+});
+
+document.querySelectorAll('[data-track]').forEach(el => {
+  el.addEventListener('click', () => {
+    if (!window.gtag) return;
+    const ziel = el.getAttribute('data-track');
+    window.gtag('event', ziel.startsWith('waitlist') ? 'warteliste_klick' : 'behance_klick', { position: ziel });
+  });
+});
+
+// Warteliste (Formspree, ohne Seitenwechsel)
+const wlForm = document.getElementById('waitlistForm');
+wlForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = wlForm.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  document.getElementById('waitlistErr').hidden = true;
+  try {
+    const res = await fetch(wlForm.action, { method: 'POST', body: new FormData(wlForm), headers: { 'Accept': 'application/json' } });
+    if (!res.ok) throw new Error('formspree');
+    wlForm.hidden = true;
+    document.getElementById('waitlistOk').hidden = false;
+    if (window.gtag) window.gtag('event', 'warteliste_absenden');
+  } catch (err) {
+    document.getElementById('waitlistErr').hidden = false;
+    btn.disabled = false;
+  }
+});
+
+// Hintergrund-Partikel
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, particles, mouse = { x: -9999, y: -9999 };
+function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+function Particle() {
+  this.reset = () => { this.x = Math.random()*W; this.y = Math.random()*H; this.vx = (Math.random()-0.5)*0.3; this.vy = (Math.random()-0.5)*0.3; this.r = Math.random()*1.4+0.3; this.alpha = Math.random()*0.30+0.05; this.life = 0; this.maxLife = Math.random()*300+200; }; this.reset();
+}
+function initParticles() { particles = Array.from({length:90}, () => new Particle()); }
+function animate() {
+  ctx.clearRect(0,0,W,H);
+  for (let i=0;i<particles.length;i++) {
+    for (let j=i+1;j<particles.length;j++) { const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,d=Math.sqrt(dx*dx+dy*dy); if(d<130){ctx.beginPath();ctx.strokeStyle=`rgba(56,189,248,${(1-d/130)*0.07})`;ctx.lineWidth=0.5;ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke();} }
+    const dx=particles[i].x-mouse.x,dy=particles[i].y-mouse.y,d=Math.sqrt(dx*dx+dy*dy); if(d<180){ctx.beginPath();ctx.strokeStyle=`rgba(56,189,248,${(1-d/180)*0.18})`;ctx.lineWidth=0.7;ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+  }
+  particles.forEach(p => {
+    p.life++; if(p.life>p.maxLife) p.reset();
+    const dx=p.x-mouse.x,dy=p.y-mouse.y,d=Math.sqrt(dx*dx+dy*dy); if(d<100){const f=(100-d)/100*0.7;p.vx+=(dx/d)*f;p.vy+=(dy/d)*f;}
+    p.vx*=0.99;p.vy*=0.99;p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    const fa=p.life<60?p.life/60:p.life>p.maxLife-60?(p.maxLife-p.life)/60:1;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(56,189,248,${p.alpha*fa})`;ctx.fill();
+  });
+  requestAnimationFrame(animate);
+}
+window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; }, {passive:true});
+window.addEventListener('mouseleave', () => { mouse.x=-9999; mouse.y=-9999; });
+window.addEventListener('resize', () => { resize(); initParticles(); }, {passive:true});
+resize(); initParticles(); animate();
+</script>
+
+<script>
+// COOKIE-CONSENT + ANALYTICS (GA4 laedt erst nach Zustimmung)
+(function() {
+  const GA_ID = '';  // GA4-Webstream YOU, Mess-ID folgt nach Anlage der Property
+  const banner = document.getElementById('cookieBanner');
+  const KEY = 'you_cookie_consent';
+  function loadAnalytics() {
+    if (!GA_ID) return;
+    const s = document.createElement('script');
+    s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', GA_ID, { anonymize_ip: true });
+  }
+  const consent = localStorage.getItem(KEY);
+  if (consent === 'accepted') { loadAnalytics(); }
+  else if (consent !== 'declined') { setTimeout(() => banner.classList.add('show'), 1200); }
+  document.getElementById('cookieAccept').addEventListener('click', () => { localStorage.setItem(KEY, 'accepted'); banner.classList.remove('show'); loadAnalytics(); });
+  document.getElementById('cookieDecline').addEventListener('click', () => { localStorage.setItem(KEY, 'declined'); banner.classList.remove('show'); });
+})();
+</script>
+
+</body>
+</html>
